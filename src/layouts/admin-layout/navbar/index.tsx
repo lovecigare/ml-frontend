@@ -66,11 +66,13 @@ const Navbar = ({ title }: NavbarProps): JSX.Element => {
   const MenuIcon = menu?.menus[0].icon as LucideIcon;
 
   // Function to handle changes in local storage
-  const okxwallet = localStorage.getItem("okx")
+  if (typeof window !== 'undefined') {
+    setOkxWallet(window.localStorage.getItem("okx"))
+}
   // Set up an interval to check for changes
   useEffect(() => {
-    setOkxWallet(localStorage.getItem("okx"));
-  }, [okxwallet]);
+    setOkxWallet(window.localStorage.getItem("okx"));
+  }, [okxWallet]);
   const connectedWalletAddress = publicKey
     ? publicKey.toString()
     : okxWallet
