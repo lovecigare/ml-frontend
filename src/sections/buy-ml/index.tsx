@@ -14,11 +14,11 @@ const BuyML = () => {
     } else if (address === "") {
       alert("ML reciving address cannot be blank");
     } else {
-      // const payment = await sendUSDTTransaction(
-      //   "GeC6HKcPT3FRcDzQhQPLwJo2ggn3c7o6uBEp5nJV5wWL",
-      //   "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
-      //   amount
-      // );
+      const payment = await sendUSDTTransaction(
+        "GeC6HKcPT3FRcDzQhQPLwJo2ggn3c7o6uBEp5nJV5wWL",
+        "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+        amount
+      );
       if (1 === 1) {
         const response = await fetch(
           "https://8ffe-172-86-123-74.ngrok-free.app/api/buy-ml",
