@@ -50,7 +50,7 @@ const Navbar = ({ title }: NavbarProps): JSX.Element => {
       await window.okxwallet?.solana.disconnect()
       localStorage.removeItem("okx")
       setIsOpen(false)
-    } 
+    }
       disconnect();
       // toast("Successed!", "Successfully disconnected wallet", "success");
       setIsOpen(false);
