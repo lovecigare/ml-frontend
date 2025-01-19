@@ -17,7 +17,10 @@ const nextConfig = {
 
     // Important: return the modified config
     return config;
-  }
+  },
+  experimental: {
+    missingSuspenseWithCSRBailout: false,
+},
 };
 
 export default nextConfig;
