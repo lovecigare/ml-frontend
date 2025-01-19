@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { WalletName } from "@solana/wallet-adapter-base";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
@@ -179,7 +179,7 @@ const WalletConnection = () => {
             <>
               <DialogTrigger asChild>
                 <button className="flex h-[40px] w-[154px] items-center justify-center rounded-full bg-blue-900">
-                  <span className="text-[14px] font-bold text-whites-basic">
+                  <span className="text-whites-basic text-[14px] font-bold">
                     {connecting ? "connecting..." : "Connect Wallet"}
                   </span>
                 </button>
@@ -230,35 +230,41 @@ const WalletConnection = () => {
                 </p>
               </div>
               <div className="flex w-full flex-col gap-8">
-                <div className="flex flex-col">
-                  <SearchInput />
-                </div>
-                <div className="flex w-full flex-col justify-between gap-4 sm:flex-row">
-                  <div className="flex w-full flex-col gap-4 sm:w-[50%]">
-                    {filteredItems
-                      .slice(0, Math.ceil(filteredItems.length / 2))
-                      .map((wallet, index) => (
-                        <WalletButton
-                          key={index}
-                          walletName={wallet.name}
-                          imageUrl={wallet.imgUrl}
-                          handleConnect={() => handleWalletSelect(wallet.name)}
-                        />
-                      ))}
+                <Suspense fallback={<div></div>}>
+                  <div className="flex flex-col">
+                    <SearchInput />
                   </div>
-                  <div className="flex w-full flex-col gap-4 sm:w-[50%]">
-                    {filteredItems
-                      .slice(Math.ceil(filteredItems.length / 2))
-                      .map((wallet, index) => (
-                        <WalletButton
-                          key={index}
-                          walletName={wallet.name}
-                          imageUrl={wallet.imgUrl}
-                          handleConnect={() => handleWalletSelect(wallet.name)}
-                        />
-                      ))}
+                  <div className="flex w-full flex-col justify-between gap-4 sm:flex-row">
+                    <div className="flex w-full flex-col gap-4 sm:w-[50%]">
+                      {filteredItems
+                        .slice(0, Math.ceil(filteredItems.length / 2))
+                        .map((wallet, index) => (
+                          <WalletButton
+                            key={index}
+                            walletName={wallet.name}
+                            imageUrl={wallet.imgUrl}
+                            handleConnect={() =>
+                              handleWalletSelect(wallet.name)
+                            }
+                          />
+                        ))}
+                    </div>
+                    <div className="flex w-full flex-col gap-4 sm:w-[50%]">
+                      {filteredItems
+                        .slice(Math.ceil(filteredItems.length / 2))
+                        .map((wallet, index) => (
+                          <WalletButton
+                            key={index}
+                            walletName={wallet.name}
+                            imageUrl={wallet.imgUrl}
+                            handleConnect={() =>
+                              handleWalletSelect(wallet.name)
+                            }
+                          />
+                        ))}
+                    </div>
                   </div>
-                </div>
+                </Suspense>
                 {/* <div className="flex flex-row items-center justify-between px-3">
                   <div className="flex flex-row items-center justify-around gap-2">
                     <AlertCircle size={16} />

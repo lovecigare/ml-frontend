@@ -45,15 +45,15 @@ const Navbar = ({ title }: NavbarProps): JSX.Element => {
 
   const handleDisconnect = async () => {
     const okxConnect = localStorage.getItem("okx");
-    console.log('okxConnected', okxConnect)
+    console.log("okxConnected", okxConnect);
     if (okxConnect) {
-      await window.okxwallet?.solana.disconnect()
-      localStorage.removeItem("okx")
-      setIsOpen(false)
-    }
-      disconnect();
-      // toast("Successed!", "Successfully disconnected wallet", "success");
+      await window.okxwallet?.solana.disconnect();
+      localStorage.removeItem("okx");
       setIsOpen(false);
+    }
+    disconnect();
+    // toast("Successed!", "Successfully disconnected wallet", "success");
+    setIsOpen(false);
   };
 
   const handleLogout = () => {
@@ -64,15 +64,15 @@ const Navbar = ({ title }: NavbarProps): JSX.Element => {
   const menuList = getMenuList(pathname);
   const menu = menuList.find((m) => m.menus[0].label === title);
   const MenuIcon = menu?.menus[0].icon as LucideIcon;
-
+  let okxwallet = "";
   // Function to handle changes in local storage
-  if (typeof window !== 'undefined') {
-    setOkxWallet(window.localStorage.getItem("okx"))
-}
+  if (typeof window !== "undefined") {
+    okxwallet = window.localStorage.getItem("okx") as string;
+  }
   // Set up an interval to check for changes
   useEffect(() => {
     setOkxWallet(window.localStorage.getItem("okx"));
-  }, [okxWallet]);
+  }, [okxwallet]);
   const connectedWalletAddress = publicKey
     ? publicKey.toString()
     : okxWallet
@@ -82,7 +82,7 @@ const Navbar = ({ title }: NavbarProps): JSX.Element => {
   // console.log("user?.subscription.planType", user?.subscription.planType);
 
   return (
-    <header className="sticky top-0 z-10 w-full border-b border-neutral-700 bg-background/9 dark:shadow-secondary dark:supports-[backdrop-filter]:bg-neutral-1000">
+    <header className="bg-background/9 dark:supports-[backdrop-filter]:bg-neutral-1000 sticky top-0 z-10 w-full border-b border-neutral-700 dark:shadow-secondary">
       <div className="mx-4 flex h-14 items-center sm:mx-8">
         <div className="flex items-center space-x-4 lg:space-x-0">
           <SheetMenu />
@@ -111,7 +111,7 @@ const Navbar = ({ title }: NavbarProps): JSX.Element => {
           </div> */}
           {/* <WalletConnection /> */}
           {isOpen && (
-            <div className="absolute top-[50px] flex w-56 flex-col gap-2 rounded-md bg-zinc-200 px-5 py-4 shadow shadow-neutrals-500 dark:bg-neutral-900">
+            <div className="shadow-neutrals-500 absolute top-[50px] flex w-56 flex-col gap-2 rounded-md bg-zinc-200 px-5 py-4 shadow dark:bg-neutral-900">
               {/* <div className="md:hidden">
                 {user?.subscription.planName === "free" &&
                   user?.subscription.planType !== "downed" && (
