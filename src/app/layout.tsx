@@ -13,8 +13,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Yieidlab App",
-  description: "Main | Yieldlab"
+  title: "Test App",
+  description: "Main | Buy Token"
 };
 
 const RootLayout = ({
