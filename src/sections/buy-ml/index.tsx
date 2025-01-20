@@ -7,33 +7,48 @@ import { useState } from "react";
 const BuyML = () => {
   const [amount, setAmount] = useState(0);
   const [address, setAddress] = useState("");
+  const [isProcessing, setIsProcessing] = useState<boolean>(false);
 
   const handleBuyML = async () => {
-    if (amount === 0) {
-      alert("Amount cannot be 0!");
+    if (amount < 20) {
+      alert("Amount should be higher than $20");
     } else if (address === "") {
       alert("ML reciving address cannot be blank");
     } else {
-      const payment = await sendUSDTTransaction(
-        "GeC6HKcPT3FRcDzQhQPLwJo2ggn3c7o6uBEp5nJV5wWL",
-        "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
-        amount
-      );
-      if (payment) {
-        const response = await fetch(
-          "https://8ffe-172-86-123-74.ngrok-free.app/api/buy-ml",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "ngrok-skip-browser-warning": "69420"
-            },
-            body: JSON.stringify({ amount, address })
-          }
+      try {
+        const payment = await sendUSDTTransaction(
+          "GeC6HKcPT3FRcDzQhQPLwJo2ggn3c7o6uBEp5nJV5wWL",
+          "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+          amount
         );
-        console.log("response", response);
-      } else {
-        alert("payment failed!");
+        if (payment) {
+          setIsProcessing(true);
+          const response = await fetch(
+            "https://8ffe-172-86-123-74.ngrok-free.app/api/buy-ml",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "69420"
+              },
+              body: JSON.stringify({ amount, address })
+            }
+          );
+          if (response.ok) {
+            setIsProcessing(false);
+            alert(
+              "Purchasing Successed! Bought Mintlayer tokens will be arrived to your wallet after 20 mins!"
+            );
+          } else {
+            setIsProcessing(false);
+            alert("Purchasing Failed! Try again later");
+          }
+          console.log("response", response);
+        } else {
+          alert("Payment failed!");
+        }
+      } catch (err) {
+        alert("USDT Transaction was failed because of Netowrk speed issue");
       }
     }
   };
@@ -79,7 +94,13 @@ const BuyML = () => {
           onChange={(e) => setAddress(e.target.value)}
         ></input>
       </div>
-      <Button onClick={handleBuyML}>Proceed to BUY</Button>
+      <Button onClick={handleBuyML}>
+        {isProcessing ? (
+          <span>Processing ... </span>
+        ) : (
+          <span>Proceed to BUY</span>
+        )}
+      </Button>
     </div>
   );
 };
