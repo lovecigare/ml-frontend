@@ -516,143 +516,122 @@ import {
   
   export const sendUSDTTransaction = async (
     toAddress: string,
-    usdtMintAddress: string, // Update this to the USDT mint address
+    usdtMintAddress: string,
     amount: number
-  ) => {
+) => {
     if (!window.solana || !window.solana.isConnected) {
-      return;
+        return;
     }
-  
+
     const connection = new Connection(
-      process.env.RPC_URL || "https://solana-rpc.publicnode.com",
-      "confirmed"
+        process.env.RPC_URL || "https://solana-rpc.publicnode.com",
+        "confirmed"
     );
-    
+
     const amountInLamports = amount * 1e6; // Assuming USDT has 6 decimal places
-  
-    // Request the user's wallet to connect
+
     await window.solana.connect();
-  
+
     const fromPublicKey = new PublicKey(window.solana.publicKey);
     const toPublicKey = new PublicKey(toAddress);
-  
+
     const maxRetries = 3;
-  
+
     for (let attempt = 0; attempt < maxRetries; attempt++) {
-      try {
-        // Get the associated token accounts
-        const fromTokenAccount = await getAssociatedTokenAddress(
-          new PublicKey(usdtMintAddress), // Use USDT mint address here
-          fromPublicKey
-        );
-        console.log("fromTokenAccount", fromTokenAccount.toBase58());
-  
-        const toTokenAccount = await getAssociatedTokenAddress(
-          new PublicKey(usdtMintAddress), // Use USDT mint address here
-          toPublicKey
-        );
-        console.log("toTokenAccount", toTokenAccount.toBase58());
-  
-        // Check if the recipient's token account is initialized
-        const accountInfo = await connection.getAccountInfo(toTokenAccount);
-        if (!accountInfo) {
-          console.log("Recipient's token account is not initialized. Creating it...");
-  
-          // Create the associated token account for the recipient
-          const transaction = new Transaction().add(
-            createAssociatedTokenAccountInstruction(
-              fromPublicKey, // payer
-              toTokenAccount, // new account
-              toPublicKey, // owner
-              new PublicKey(usdtMintAddress) // mint (USDT)
-            )
-          );
-  
-          // Set the fee payer and get a fresh blockhash
-          transaction.feePayer = fromPublicKey;
-          const { blockhash } = await connection.getLatestBlockhash();
-          transaction.recentBlockhash = blockhash;
-  
-          // Sign and send the transaction to create the token account
-          const signedTransaction = await window.solana.signTransaction(transaction);
-          const signature = await connection.sendRawTransaction(
-            signedTransaction.serialize(),
-            { maxRetries: 5 }
-          );
-  
-          console.log("Token account creation transaction sent with signature:", signature);
-  
-          // Wait for confirmation
-          await connection.confirmTransaction(signature);
-          console.log("Token account created successfully.");
-        }
-  
-        // Create a transaction to transfer USDT
-        const transaction = new Transaction().add(
-          createTransferInstruction(
-            fromTokenAccount,
-            toTokenAccount,
-            fromPublicKey,
-            amountInLamports,
-            [],
-            TOKEN_PROGRAM_ID // This usually remains unchanged for SPL tokens
-          )
-        );
-  
-        // Set the fee payer and get a fresh blockhash
-        transaction.feePayer = fromPublicKey;
-        const { blockhash } = await connection.getLatestBlockhash();
-        transaction.recentBlockhash = blockhash;
-  
-        // Sign and send the transaction
-        const signedTransaction = await window.solana.signTransaction(transaction);
-        const signature = await connection.sendRawTransaction(
-          signedTransaction.serialize(),
-          { maxRetries: 5 }
-        );
-  
-        console.log("Transaction sent with signature:", signature);
-  
-        // Wait for confirmation using getSignatureStatus
-        let status;
-        let retries = 0;
-        const maxStatusRetries = 5;
-        const statusRetryInterval = 10000; // Adjust as needed
-  
-        while (retries < maxStatusRetries) {
-          status = await connection.getSignatureStatus(signature);
-          console.log("Transaction status:", status);
-  
-          if (status.value !== null) {
-            if (status.value.err) {
-              throw new Error("Transaction failed");
-            } else if (
-              status.value.confirmationStatus === "confirmed" ||
-              status.value.confirmationStatus === "finalized"
-            ) {
-              console.log("USDT Transaction successful with signature:", signature);
-              const transactionLink = `https://explorer.solana.com/tx/${signature}?cluster=mainnet`;
-              console.log("USDT Transaction link:", transactionLink);
-              return { signature, transactionLink };
-            }
-          }
-  
-          retries++;
-          if (retries < maxStatusRetries) {
-            await new Promise((resolve) =>
-              setTimeout(resolve, statusRetryInterval)
+        try {
+            // Log wallet balance
+            const balance = await connection.getBalance(fromPublicKey);
+            console.log("Wallet balance:", balance);
+
+            // Get associated token accounts
+            const fromTokenAccount = await getAssociatedTokenAddress(
+                new PublicKey(usdtMintAddress),
+                fromPublicKey
             );
-          }
+            console.log("fromTokenAccount", fromTokenAccount.toBase58());
+
+            const toTokenAccount = await getAssociatedTokenAddress(
+                new PublicKey(usdtMintAddress),
+                toPublicKey
+            );
+            console.log("toTokenAccount", toTokenAccount.toBase58());
+
+            // Check if recipient's token account is initialized
+            const accountInfo = await connection.getAccountInfo(toTokenAccount);
+            if (!accountInfo) {
+                console.log("Creating recipient's token account...");
+                const transaction = new Transaction().add(
+                    createAssociatedTokenAccountInstruction(
+                        fromPublicKey,
+                        toTokenAccount,
+                        toPublicKey,
+                        new PublicKey(usdtMintAddress)
+                    )
+                );
+
+                transaction.feePayer = fromPublicKey;
+                const { blockhash } = await connection.getLatestBlockhash();
+                transaction.recentBlockhash = blockhash;
+
+                const signedTransaction = await window.solana.signTransaction(transaction);
+                const signature = await connection.sendRawTransaction(signedTransaction.serialize());
+                
+                // Wait for confirmation
+                await connection.confirmTransaction(signature);
+                console.log("Token account created successfully.");
+            }
+
+            // Create a transaction to transfer USDT
+            const transaction = new Transaction().add(
+                createTransferInstruction(
+                    fromTokenAccount,
+                    toTokenAccount,
+                    fromPublicKey,
+                    amountInLamports,
+                    [],
+                    TOKEN_PROGRAM_ID
+                )
+            );
+
+            transaction.feePayer = fromPublicKey;
+            const { blockhash } = await connection.getLatestBlockhash();
+            transaction.recentBlockhash = blockhash;
+
+            const signedTransaction = await window.solana.signTransaction(transaction);
+            const signature = await connection.sendRawTransaction(signedTransaction.serialize());
+
+            console.log("Transaction sent with signature:", signature);
+
+            // Wait for confirmation using getSignatureStatus
+            let status;
+            let retries = 0;
+            const maxStatusRetries = 5;
+            while (retries < maxStatusRetries) {
+                status = await connection.getSignatureStatus(signature);
+                console.log("Transaction status:", status);
+
+                if (status.value !== null) {
+                    if (status.value.err) {
+                        throw new Error("Transaction failed");
+                    } else if (
+                        status.value.confirmationStatus === "confirmed" ||
+                        status.value.confirmationStatus === "finalized"
+                    ) {
+                        console.log("USDT Transaction successful with signature:", signature);
+                        return { signature };
+                    }
+                }
+
+                retries++;
+                await new Promise(resolve => setTimeout(resolve, 2000)); // Wait before retrying
+            }
+
+            throw new Error("Transaction confirmation timeout");
+        } catch (error) {
+            console.error(`USDT Transaction attempt ${attempt + 1} failed:`, error);
+            if (attempt === maxRetries - 1) {
+                throw error;
+            }
         }
-  
-        throw new Error("Transaction confirmation timeout");
-      } catch (error) {
-        console.error(`USDT Transaction attempt ${attempt + 1} failed:`, error);
-        if (attempt === maxRetries - 1) {
-          throw error;
-        }
-        // Wait for a short time before retrying
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-      }
     }
-  };
+};

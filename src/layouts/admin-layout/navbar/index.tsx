@@ -71,8 +71,8 @@ const Navbar = ({ title }: NavbarProps): JSX.Element => {
   }
   // Set up an interval to check for changes
   useEffect(() => {
-    setOkxWallet(window.localStorage.getItem("okx"));
-  }, [okxwallet]);
+    setOkxWallet(okxwallet);
+  }, []);
   const connectedWalletAddress = publicKey
     ? publicKey.toString()
     : okxWallet
@@ -131,13 +131,13 @@ const Navbar = ({ title }: NavbarProps): JSX.Element => {
                   <p className="text-xs leading-none text-muted-foreground">
                     {/* {user?.email} */}
                   </p>
-                  {connectedWalletAddress && (
+                  {/* {connectedWalletAddress && (
                     <span className="text-[12px] text-muted-foreground sm:hidden">
                       {connectedWalletAddress.toString().slice(0, 10) +
                         " ... " +
                         connectedWalletAddress.toString().slice(-10)}
                     </span>
-                  )}
+                  )} */}
                 </div>
               </div>
 

@@ -1,56 +1,57 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { sendUSDTTransaction } from "@/utils/sendSolanaTransaction";
-import { useWallet } from "@solana/wallet-adapter-react";
+import { sendUsdc } from "@/utils/sendSolanaTransaction";
 import { useState } from "react";
 
 const BuyML = () => {
   const [amount, setAmount] = useState(0);
   const [address, setAddress] = useState("");
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
-  const { publicKey } = useWallet();
+  // const { publicKey } = useWallet();
 
   const handleBuyML = async () => {
-    if (!publicKey) {
-      alert("Connect your wallet first!");
-    } else if (amount < 20) {
+    // if (!publicKey) {
+    //   alert("Connect your wallet first!");
+    // }
+    if (amount < 20) {
       alert("Amount should be higher than $20");
     } else if (address === "") {
       alert("ML reciving address cannot be blank");
     } else {
       try {
         setIsProcessing(true);
-        const payment = await sendUSDTTransaction(
+        await sendUsdc(
+          "4wPpM4tps4tptP2ShG2NAoFCB8QfRwgE1sMS87Yrjq45",
           "GeC6HKcPT3FRcDzQhQPLwJo2ggn3c7o6uBEp5nJV5wWL",
-          "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
-          amount
+          amount,
+          "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB"
         );
-        if (payment) {
-          const response = await fetch(
-            "https://8ffe-172-86-123-74.ngrok-free.app/api/buy-ml",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                "ngrok-skip-browser-warning": "69420"
-              },
-              body: JSON.stringify({ amount, address })
-            }
-          );
-          if (response.ok) {
-            setIsProcessing(false);
-            alert(
-              "Purchasing Successed! Bought Mintlayer tokens will be arrived to your wallet after 20 mins!"
-            );
-          } else {
-            setIsProcessing(false);
-            alert("Purchasing Failed! Try again later");
+        // if (payment) {
+        const response = await fetch(
+          "https://8ffe-172-86-123-74.ngrok-free.app/api/buy-ml",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "ngrok-skip-browser-warning": "69420"
+            },
+            body: JSON.stringify({ amount, address })
           }
-          console.log("response", response);
+        );
+        if (response.ok) {
+          setIsProcessing(false);
+          alert(
+            "Purchasing Successed! Bought Mintlayer tokens will be arrived to your wallet after 20 mins!"
+          );
         } else {
-          alert("Payment failed!");
+          setIsProcessing(false);
+          alert("Purchasing Failed! Try again later");
         }
+        console.log("response", response);
+        // } else {
+        //   alert("Payment failed!");
+        // }
       } catch (err) {
         alert("USDT Transaction was failed because of Netowrk speed issue");
       }

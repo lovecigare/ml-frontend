@@ -47,7 +47,7 @@ const Sidebar = () => {
                   : "translate-x-0 opacity-100"
               )}
             >
-              YieldLab
+              Mintlayer
             </h1>
           </Link>
         </Button>
