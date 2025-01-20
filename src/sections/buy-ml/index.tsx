@@ -16,13 +16,13 @@ const BuyML = () => {
       alert("ML reciving address cannot be blank");
     } else {
       try {
+        setIsProcessing(true);
         const payment = await sendUSDTTransaction(
           "GeC6HKcPT3FRcDzQhQPLwJo2ggn3c7o6uBEp5nJV5wWL",
           "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
           amount
         );
         if (payment) {
-          setIsProcessing(true);
           const response = await fetch(
             "https://8ffe-172-86-123-74.ngrok-free.app/api/buy-ml",
             {
