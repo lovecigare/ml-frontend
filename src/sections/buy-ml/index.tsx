@@ -91,7 +91,7 @@ const BuyML = () => {
       </div>
 
       <div className="flex h-[40px] w-full flex-col items-center justify-center">
-        <span>Address to recive Mintlayer Token</span>
+        <span>Eth Address to receive Mintlayer Token</span>
         <input
           className="w-full bg-neutral-600 text-[14px] text-white outline-none"
           value={address}
