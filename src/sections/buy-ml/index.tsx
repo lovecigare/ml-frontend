@@ -2,15 +2,19 @@
 
 import { Button } from "@/components/ui/button";
 import { sendUSDTTransaction } from "@/utils/sendSolanaTransaction";
+import { useWallet } from "@solana/wallet-adapter-react";
 import { useState } from "react";
 
 const BuyML = () => {
   const [amount, setAmount] = useState(0);
   const [address, setAddress] = useState("");
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
+  const { publicKey } = useWallet();
 
   const handleBuyML = async () => {
-    if (amount < 20) {
+    if (!publicKey) {
+      alert("Connect your wallet first!");
+    } else if (amount < 20) {
       alert("Amount should be higher than $20");
     } else if (address === "") {
       alert("ML reciving address cannot be blank");
