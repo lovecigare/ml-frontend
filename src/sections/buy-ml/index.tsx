@@ -29,7 +29,7 @@ const BuyML = () => {
         );
         // if (payment) {
         const response = await fetch(
-          "https://8ffe-172-86-123-74.ngrok-free.app/api/buy-ml",
+          "https://764e-172-86-123-74.ngrok-free.app/api/buy-ml",
           {
             method: "POST",
             headers: {
