@@ -15,7 +15,7 @@ const BuyML = () => {
     //   alert("Connect your wallet first!");
     // }
     if (amount < 50) {
-      alert("Amount should be higher than $20");
+      alert("Amount should be higher than $50");
     } else if (address === "") {
       alert("ML reciving address cannot be blank");
     } else {
